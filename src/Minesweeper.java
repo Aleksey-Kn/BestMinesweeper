@@ -1,38 +1,22 @@
+import javax.swing.*;
+import java.awt.*;
+import java.lang.management.GarbageCollectorMXBean;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
 
 public class Minesweeper {
-    private static final char[][] world = new char[9][9];
-    private static final char[][] mask = new char[9][9];
-    private static int opened = 0;
+    private static Random random;
+    private static char[][] world = new char[9][9];
+    private static int opened;
 
     public static void main(String[] args) {
-        System.out.println("How many mines do you want on the field?");
-        Scanner scanner = new Scanner(System.in);
-        int colMine = scanner.nextInt();
-        int counter = 0;
-        int x, y;
-        Random random = new Random();
-        for (char[] chars : world) {
-            Arrays.fill(chars, '.');
-        }
-        while (colMine > counter) { // создание поля
-            x = random.nextInt(world.length);
-            y = random.nextInt(world.length);
-            if (world[y][x] == '.') {
-                counter++;
-                world[y][x] = 'X';
-            }
-        }
-        for (char[] ch : mask) {
-            Arrays.fill(ch, '.');
-        }
-        show(mask);
-        System.out.print("Set/delete mines marks (x and y coordinates): ");
-        x = scanner.nextInt() - 1;
-        y = scanner.nextInt() - 1;
+        random = new Random();
+        Graphics graphics = new Graphics();
+    }
+
+    public static char firstOpen(int x, int y) {
         if (world[y][x] == 'X') {
             int tx, ty;
             do {
@@ -50,39 +34,7 @@ public class Minesweeper {
                 }
             }
         }
-        open(x, y);
-        while (opened + colMine < 81) {
-            show(mask);
-            System.out.print("Set/delete mines marks (x and y coordinates): ");
-            scanner.nextLine();
-            x = scanner.nextInt() - 1;
-            y = scanner.nextInt() - 1;
-            if (scanner.next().equals("free")) {
-                if (!open(x, y)) {
-                    System.out.println("You stepped on a mine and failed!");
-                    show(world);
-                    return;
-                }
-            } else if (mask[y][x] == '*'){
-                mask[y][x] = '.';
-            }
-            else{
-                mask[y][x] = '*';
-            }
-            counter = 0;
-            for (int i = 0; i < world.length; i++) {
-                for (int j = 0; j < world.length; j++) {
-                    if (mask[i][j] == '*' && world[i][j] == 'X') {
-                        counter++;
-                    }
-                }
-            }
-            if (counter == colMine) {
-                break;
-            }
-        }
-        System.out.println("Congratulations! You found all mines!");
-        show(world);
+        return open(x, y);
     }
 
     private static int countMine(int x, int y) {
@@ -98,47 +50,66 @@ public class Minesweeper {
         return counter;
     }
 
-    private static boolean open(int x, int y) {
+    private static char open(int x, int y) {
         ArrayDeque<int[]> stack = new ArrayDeque<>();
         stack.add(new int[]{x, y});
         if (world[y][x] == 'X') {
-            return false;
+            return 'X';
         }
         while (!stack.isEmpty()) {
             x = stack.peek()[0];
             y = stack.pop()[1];
             try {
-                if (mask[y][x] == '.' || mask[y][x] == '*') {
-                    if (world[y][x] == '/') {
-                        stack.add(new int[]{x - 1, y - 1});
-                        stack.add(new int[]{x, y - 1});
-                        stack.add(new int[]{x + 1, y - 1});
-                        stack.add(new int[]{x + 1, y});
-                        stack.add(new int[]{x + 1, y + 1});
-                        stack.add(new int[]{x, y + 1});
-                        stack.add(new int[]{x - 1, y + 1});
-                        stack.add(new int[]{x - 1, y});
-                    }
-                    opened++;
-                    mask[y][x] = world[y][x];
+                if (world[y][x] == '/') {
+                    stack.add(new int[]{x - 1, y - 1});
+                    stack.add(new int[]{x, y - 1});
+                    stack.add(new int[]{x + 1, y - 1});
+                    stack.add(new int[]{x + 1, y});
+                    stack.add(new int[]{x + 1, y + 1});
+                    stack.add(new int[]{x, y + 1});
+                    stack.add(new int[]{x - 1, y + 1});
+                    stack.add(new int[]{x - 1, y});
                 }
+                opened++;
             } catch (ArrayIndexOutOfBoundsException ignore) {
             }
         }
-        return true;
+        return world[y][x];
     }
 
-    private static void show(char[][] mas) {
-        System.out.println(" │123456789│");
-        System.out.println("—│—————————│");
-        for (int i = 0; i < mas.length; i++) {
-            System.out.print((i + 1) + "|");
-            for (char now : mas[i]) {
-                System.out.print(now);
-            }
-            System.out.println("|");
+    public static char[][] createWorld(int colMine) {
+        int counter = 0, x, y;
+        opened = 0;
+        for (char[] chars : world) {
+            Arrays.fill(chars, '.');
         }
-        System.out.println("—│—————————│");
+        while (colMine > counter) { // создание поля
+            x = random.nextInt(world.length);
+            y = random.nextInt(world.length);
+            if (world[y][x] == '.') {
+                counter++;
+                world[y][x] = 'X';
+            }
+        }
+        return world;
+    }
+
+    public static boolean isWin(int colMine, JLabel[][] mask) {
+        int counter = 0;
+        if (opened + colMine == 81) {
+            return true;
+        }
+        for (int i = 0; i < world.length; i++) {
+            for (int j = 0; j < world.length; j++) {
+                if (mask[i][j].getBackground().equals(Color.orange) && world[i][j] == 'X') {
+                    counter++;
+                }
+            }
+        }
+        if (counter == colMine) {
+            return true;
+        }
+        return false;
     }
 }
 
