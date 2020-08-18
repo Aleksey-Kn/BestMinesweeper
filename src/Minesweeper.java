@@ -13,7 +13,7 @@ public class Minesweeper {
 
     public static void main(String[] args) {
         random = new Random();
-        Graphics graphics = new Graphics();
+        new Graphics();
     }
 
     public static char firstOpen(int x, int y) {
@@ -50,7 +50,7 @@ public class Minesweeper {
         return counter;
     }
 
-    private static char open(int x, int y) {
+    public static char open(int x, int y) {
         ArrayDeque<int[]> stack = new ArrayDeque<>();
         stack.add(new int[]{x, y});
         if (world[y][x] == 'X') {
