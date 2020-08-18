@@ -1,14 +1,12 @@
 import javax.swing.*;
 import java.awt.*;
-import java.lang.management.GarbageCollectorMXBean;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Random;
-import java.util.Scanner;
 
 public class Minesweeper {
     private static Random random;
-    private static char[][] world = new char[9][9];
+    private static final char[][] world = new char[9][9];
     private static int opened;
 
     public static void main(String[] args) {
@@ -115,10 +113,7 @@ public class Minesweeper {
                 }
             }
         }
-        if (counter == colMine) {
-            return true;
-        }
-        return false;
+        return counter == colMine;
     }
 
     public static char[][] getWorld() {
