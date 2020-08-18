@@ -49,40 +49,35 @@ public class Minesweeper {
     }
 
     public static boolean open(int x, int y, JLabel[][] labels) {
-            ArrayDeque<int[]> stack = new ArrayDeque<>();
-            stack.add(new int[]{x, y});
-            if (world[y][x] == 'X') {
-                return false;
-            }
-            while (!stack.isEmpty()) {
-                x = stack.peek()[0];
-                y = stack.pop()[1];
-                if (x >= 0 && x < 10 && y >= 0 && y < 10) {
-                    try {
-                        if (world[y][x] == '/'){
-                                if((labels[y][x].getBackground().equals(Color.gray)
-                                || labels[y][x].getBackground().equals(Color.orange))) {
-                                    stack.add(new int[]{x - 1, y - 1});
-                                    stack.add(new int[]{x, y - 1});
-                                    stack.add(new int[]{x + 1, y - 1});
-                                    stack.add(new int[]{x + 1, y});
-                                    stack.add(new int[]{x + 1, y + 1});
-                                    stack.add(new int[]{x, y + 1});
-                                    stack.add(new int[]{x - 1, y + 1});
-                                    stack.add(new int[]{x - 1, y});
-                                }
-                        }
-                        else{
-                            labels[y][x].setText(Integer.toString(world[y][x] - '0'));
-                            labels[y][x].setForeground(world[y][x] - '0' < 5? (world[y][x] - '0' < 3? Color.BLUE: Color.ORANGE): Color.RED);
-                        }
-                        labels[y][x].setBackground(Color.white);
-                        opened++;
-                    } catch (ArrayIndexOutOfBoundsException ignore) {
-                    }
+        ArrayDeque<int[]> stack = new ArrayDeque<>();
+        stack.add(new int[]{x, y});
+        if (world[y][x] == 'X') {
+            return false;
+        }
+        while (!stack.isEmpty()) {
+            x = stack.peek()[0];
+            y = stack.pop()[1];
+            if (x >= 0 && x < 9 && y >= 0 && y < 9
+                    && (labels[y][x].getBackground().equals(Color.gray)
+                    || labels[y][x].getBackground().equals(Color.orange))) {
+                if (world[y][x] == '/') {
+                    stack.add(new int[]{x - 1, y - 1});
+                    stack.add(new int[]{x, y - 1});
+                    stack.add(new int[]{x + 1, y - 1});
+                    stack.add(new int[]{x + 1, y});
+                    stack.add(new int[]{x + 1, y + 1});
+                    stack.add(new int[]{x, y + 1});
+                    stack.add(new int[]{x - 1, y + 1});
+                    stack.add(new int[]{x - 1, y});
+                } else {
+                    labels[y][x].setText(Integer.toString(world[y][x] - '0'));
+                    labels[y][x].setForeground(world[y][x] - '0' < 5 ? (world[y][x] - '0' < 3 ? Color.BLUE : Color.ORANGE) : Color.RED);
                 }
+                labels[y][x].setBackground(Color.white);
+                opened++;
             }
-            return true;
+        }
+        return true;
     }
 
     public static void createWorld(int colMine) {

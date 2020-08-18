@@ -54,45 +54,47 @@ public class Graphics extends JFrame {
                         if (isPlaying) {
                             x = e.getX() / (getWidth() / 9);
                             y = e.getY() / (getHeight() / 9);
-                            if (e.getButton() == MouseEvent.BUTTON1 && !visible[y][x].getBackground().equals(Color.orange)) {
-                                if (firstOpen) {
-                                    temp = Minesweeper.firstOpen(x, y, visible);
-                                    firstOpen = false;
-                                } else {
-                                    temp = Minesweeper.open(x, y, visible);
-                                }
-                                if (!temp) { // поражение
-                                    for (int i = 0; i < 9; i++) {
-                                        for (int j = 0; j < 9; j++) {
-                                            now = Minesweeper.getWorld()[i][j];
-                                            if (Character.isDigit(now)) {
-                                                visible[i][j].setText(Character.toString(now));
-                                                visible[i][j].setBackground(Color.white);
-                                                visible[i][j].setForeground(now < 5 ? (now < 3 ? Color.BLUE : Color.ORANGE) : Color.red);
-                                            } else if (now == 'X') {
-                                                visible[i][j].setBackground(Color.red);
-                                            } else {
-                                                visible[i][j].setBackground(Color.white);
+                            if(x >= 0 && x < 9 && y >= 0 && y < 9) {
+                                if (e.getButton() == MouseEvent.BUTTON1 && !visible[y][x].getBackground().equals(Color.orange)) {
+                                    if (firstOpen) {
+                                        temp = Minesweeper.firstOpen(x, y, visible);
+                                        firstOpen = false;
+                                    } else {
+                                        temp = Minesweeper.open(x, y, visible);
+                                    }
+                                    if (!temp) { // поражение
+                                        for (int i = 0; i < 9; i++) {
+                                            for (int j = 0; j < 9; j++) {
+                                                now = Minesweeper.getWorld()[i][j];
+                                                if (Character.isDigit(now)) {
+                                                    visible[i][j].setText(Character.toString(now));
+                                                    visible[i][j].setBackground(Color.white);
+                                                    visible[i][j].setForeground(now < 5 ? (now < 3 ? Color.BLUE : Color.ORANGE) : Color.red);
+                                                } else if (now == 'X') {
+                                                    visible[i][j].setBackground(Color.red);
+                                                } else {
+                                                    visible[i][j].setBackground(Color.white);
+                                                }
                                             }
                                         }
+                                        JOptionPane.showMessageDialog(null, "Поражение");
+                                        isPlaying = false;
+                                        firstPanel.setVisible(true);
+                                        setVisible(false);
                                     }
-                                    JOptionPane.showMessageDialog(null, "Поражение");
+                                } else {
+                                    if (visible[y][x].getBackground().equals(Color.gray)) {
+                                        visible[y][x].setBackground(Color.orange);
+                                    } else if (visible[y][x].getBackground().equals(Color.orange)) {
+                                        visible[y][x].setBackground(Color.gray);
+                                    }
+                                }
+                                if (Minesweeper.isWin(colMine, visible)) {
+                                    JOptionPane.showMessageDialog(null, "Все мины обнаружены. Победа!");
                                     isPlaying = false;
                                     firstPanel.setVisible(true);
                                     setVisible(false);
                                 }
-                            } else {
-                                if (visible[y][x].getBackground().equals(Color.gray)) {
-                                    visible[y][x].setBackground(Color.orange);
-                                } else if (visible[y][x].getBackground().equals(Color.orange)) {
-                                    visible[y][x].setBackground(Color.gray);
-                                }
-                            }
-                            if (Minesweeper.isWin(colMine, visible)) {
-                                JOptionPane.showMessageDialog(null, "Все мины обнаружены. Победа!");
-                                isPlaying = false;
-                                firstPanel.setVisible(true);
-                                setVisible(false);
                             }
                         } else {
                             JOptionPane.showMessageDialog(null, "Игровое поле не создано!");
