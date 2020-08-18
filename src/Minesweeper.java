@@ -77,7 +77,7 @@ public class Minesweeper {
         return world[y][x];
     }
 
-    public static char[][] createWorld(int colMine) {
+    public static void createWorld(int colMine) {
         int counter = 0, x, y;
         opened = 0;
         for (char[] chars : world) {
@@ -91,7 +91,6 @@ public class Minesweeper {
                 world[y][x] = 'X';
             }
         }
-        return world;
     }
 
     public static boolean isWin(int colMine, JLabel[][] mask) {

@@ -4,6 +4,7 @@ import java.awt.*;
 public class Graphics extends JFrame {
     private final JLabel[][] visible = new JLabel[9][9];
     private boolean isPlaying = false;
+    private int colMine;
 
     public Graphics() {
         super("Minesweeper");
@@ -13,22 +14,20 @@ public class Graphics extends JFrame {
         for(JLabel[] labels: visible){
             for(int i = 0; i < labels.length; i++){
                 labels[i] = new JLabel();
-                labels[i].setBackground(Color.gray);
-                labels[i].setSize(30, 30);
             }
         }
         JTextField textField = new JTextField();
         JButton start = new JButton("Создать");
-
-
-        add(new JPanel(){
+        JPanel firstPanel = new JPanel() {
             {
                 setBounds(0, 0, 300, 50);
                 setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
                 add(textField);
                 add(start);
             }
-        });
+        };
+
+        add(firstPanel);
 
         add(new JPanel(){
             {
@@ -43,10 +42,23 @@ public class Graphics extends JFrame {
             }
         });
 
+        start.addActionListener(l -> {
+            if(!isPlaying){
+                isPlaying = true;
+                firstPanel.setVisible(false);
+                for(JLabel[] labels: visible){
+                    for(int i = 0; i < labels.length; i++){
+                        labels[i].setBackground(Color.gray);
+                        labels[i].setSize(30, 30);
+                        labels[i].setText("");
+                    }
+                }
+                colMine = Integer.parseInt(textField.getText());
+                textField.setText("");
+                Minesweeper.createWorld(colMine);
+            }
+        });
+
         setVisible(true);
-
-        while (true){
-
-        }
     }
 }
