@@ -12,11 +12,12 @@ public class Graphics extends JFrame {
     public Graphics() {
         super("Minesweeper");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setBounds(200, 100, 300, 375);
+        setBounds(200, 100, 300, 400);
 
         for (JLabel[] labels : visible) {
             for (int i = 0; i < labels.length; i++) {
                 labels[i] = new JLabel();
+                labels[i].setOpaque(true);
             }
         }
         JTextField textField = new JTextField();
@@ -32,8 +33,9 @@ public class Graphics extends JFrame {
 
         add(firstPanel);
 
-        add(new JPanel() {
-            char temp;
+        JPanel secondPanel = new JPanel() {
+            boolean temp;
+            char now;
             int x, y;
 
             {
@@ -44,56 +46,53 @@ public class Graphics extends JFrame {
                         add(obj);
                     }
                 }
+                setBackground(Color.black);
+                setVisible(false);
                 addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
                         if (isPlaying) {
-                            x = e.getX() / 33;
-                            y = e.getY() / 33;
+                            x = e.getX() / (getWidth() / 9);
+                            y = e.getY() / (getHeight() / 9);
                             if (e.getButton() == MouseEvent.BUTTON1 && !visible[y][x].getBackground().equals(Color.orange)) {
                                 if (firstOpen) {
-                                    temp = Minesweeper.firstOpen(x, y);
+                                    temp = Minesweeper.firstOpen(x, y, visible);
                                     firstOpen = false;
                                 } else {
-                                    temp = Minesweeper.open(x, y);
+                                    temp = Minesweeper.open(x, y, visible);
                                 }
-                                if (temp == 'X') { // поражение
-                                    for (JLabel[] labels : visible) {
-                                        for (JLabel obj : labels) {
-                                            if (Character.isDigit(temp)) {
-                                                obj.setText(Character.toString(temp));
-                                                obj.setBackground(Color.white);
-                                                obj.setForeground(temp - '0' < 5 ? (temp - '0' < 3 ? Color.BLUE : Color.ORANGE) : Color.red);
-                                            } else if (temp == 'X') {
-                                                obj.setBackground(Color.red);
+                                if (!temp) { // поражение
+                                    for (int i = 0; i < 9; i++) {
+                                        for (int j = 0; j < 9; j++) {
+                                            now = Minesweeper.getWorld()[i][j];
+                                            if (Character.isDigit(now)) {
+                                                visible[i][j].setText(Character.toString(now));
+                                                visible[i][j].setBackground(Color.white);
+                                                visible[i][j].setForeground(now < 5 ? (now < 3 ? Color.BLUE : Color.ORANGE) : Color.red);
+                                            } else if (now == 'X') {
+                                                visible[i][j].setBackground(Color.red);
                                             } else {
-                                                obj.setBackground(Color.white);
+                                                visible[i][j].setBackground(Color.white);
                                             }
                                         }
                                     }
                                     JOptionPane.showMessageDialog(null, "Поражение");
                                     isPlaying = false;
                                     firstPanel.setVisible(true);
-                                } else {
-                                    if(Character.isDigit(temp)) {
-                                        visible[y][x].setText(Character.toString(temp));
-                                        visible[y][x].setBackground(Color.white);
-                                        visible[y][x].setForeground(temp - '0' < 5 ? (temp - '0' < 3 ? Color.BLUE : Color.ORANGE) : Color.red);
-                                    }else{
-                                        visible[y][x].setBackground(Color.white);
-                                    }
-                                    if (Minesweeper.isWin(colMine, visible)) {
-                                        JOptionPane.showMessageDialog(null, "Все мины обнаружены. Победа!");
-                                        isPlaying = false;
-                                        firstPanel.setVisible(true);
-                                    }
+                                    setVisible(false);
                                 }
-                            } else{
-                                if(visible[y][x].getBackground().equals(Color.gray)){
+                            } else {
+                                if (visible[y][x].getBackground().equals(Color.gray)) {
                                     visible[y][x].setBackground(Color.orange);
-                                } else if(visible[y][x].getBackground().equals(Color.orange)){
+                                } else if (visible[y][x].getBackground().equals(Color.orange)) {
                                     visible[y][x].setBackground(Color.gray);
                                 }
+                            }
+                            if (Minesweeper.isWin(colMine, visible)) {
+                                JOptionPane.showMessageDialog(null, "Все мины обнаружены. Победа!");
+                                isPlaying = false;
+                                firstPanel.setVisible(true);
+                                setVisible(false);
                             }
                         } else {
                             JOptionPane.showMessageDialog(null, "Игровое поле не создано!");
@@ -101,13 +100,16 @@ public class Graphics extends JFrame {
                     }
                 });
             }
-        });
+        };
+
+        add(secondPanel);
 
         start.addActionListener(l -> {
             if (!isPlaying) {
                 isPlaying = true;
                 firstOpen = true;
                 firstPanel.setVisible(false);
+                secondPanel.setVisible(true);
                 for (JLabel[] labels : visible) {
                     for (JLabel label : labels) {
                         label.setBackground(Color.gray);

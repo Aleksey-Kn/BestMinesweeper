@@ -16,7 +16,7 @@ public class Minesweeper {
         new Graphics();
     }
 
-    public static char firstOpen(int x, int y) {
+    public static boolean firstOpen(int x, int y, JLabel[][] labels) {
         if (world[y][x] == 'X') {
             int tx, ty;
             do {
@@ -34,7 +34,7 @@ public class Minesweeper {
                 }
             }
         }
-        return open(x, y);
+        return open(x, y, labels);
     }
 
     private static int countMine(int x, int y) {
@@ -50,31 +50,41 @@ public class Minesweeper {
         return counter;
     }
 
-    public static char open(int x, int y) {
-        ArrayDeque<int[]> stack = new ArrayDeque<>();
-        stack.add(new int[]{x, y});
-        if (world[y][x] == 'X') {
-            return 'X';
-        }
-        while (!stack.isEmpty()) {
-            x = stack.peek()[0];
-            y = stack.pop()[1];
-            try {
-                if (world[y][x] == '/') {
-                    stack.add(new int[]{x - 1, y - 1});
-                    stack.add(new int[]{x, y - 1});
-                    stack.add(new int[]{x + 1, y - 1});
-                    stack.add(new int[]{x + 1, y});
-                    stack.add(new int[]{x + 1, y + 1});
-                    stack.add(new int[]{x, y + 1});
-                    stack.add(new int[]{x - 1, y + 1});
-                    stack.add(new int[]{x - 1, y});
-                }
-                opened++;
-            } catch (ArrayIndexOutOfBoundsException ignore) {
+    public static boolean open(int x, int y, JLabel[][] labels) {
+            ArrayDeque<int[]> stack = new ArrayDeque<>();
+            stack.add(new int[]{x, y});
+            if (world[y][x] == 'X') {
+                return false;
             }
-        }
-        return world[y][x];
+            while (!stack.isEmpty()) {
+                x = stack.peek()[0];
+                y = stack.pop()[1];
+                if (x >= 0 && x < 10 && y >= 0 && y < 10) {
+                    try {
+                        if (world[y][x] == '/'){
+                                if((labels[y][x].getBackground().equals(Color.gray)
+                                || labels[y][x].getBackground().equals(Color.orange))) {
+                                    stack.add(new int[]{x - 1, y - 1});
+                                    stack.add(new int[]{x, y - 1});
+                                    stack.add(new int[]{x + 1, y - 1});
+                                    stack.add(new int[]{x + 1, y});
+                                    stack.add(new int[]{x + 1, y + 1});
+                                    stack.add(new int[]{x, y + 1});
+                                    stack.add(new int[]{x - 1, y + 1});
+                                    stack.add(new int[]{x - 1, y});
+                                }
+                        }
+                        else{
+                            labels[y][x].setText(Integer.toString(world[y][x] - '0'));
+                            labels[y][x].setForeground(world[y][x] - '0' < 5? (world[y][x] - '0' < 3? Color.BLUE: Color.ORANGE): Color.RED);
+                        }
+                        labels[y][x].setBackground(Color.white);
+                        opened++;
+                    } catch (ArrayIndexOutOfBoundsException ignore) {
+                    }
+                }
+            }
+            return true;
     }
 
     public static void createWorld(int colMine) {
@@ -109,6 +119,10 @@ public class Minesweeper {
             return true;
         }
         return false;
+    }
+
+    public static char[][] getWorld() {
+        return world;
     }
 }
 
