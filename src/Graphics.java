@@ -1,5 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -106,7 +108,7 @@ public class Graphics extends JFrame {
 
         add(secondPanel);
 
-        start.addActionListener(l -> {
+        ActionListener actionListener = e -> {
             if (!isPlaying) {
                 isPlaying = true;
                 firstOpen = true;
@@ -123,7 +125,10 @@ public class Graphics extends JFrame {
                 textField.setText("");
                 Minesweeper.createWorld(colMine);
             }
-        });
+        };
+
+        start.addActionListener(actionListener);
+        textField.addActionListener(actionListener);
 
         setVisible(true);
     }
