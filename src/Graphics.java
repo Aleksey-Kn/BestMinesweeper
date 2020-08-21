@@ -19,6 +19,8 @@ public class Graphics extends JFrame {
             for (int i = 0; i < labels.length; i++) {
                 labels[i] = new JLabel();
                 labels[i].setOpaque(true);
+                labels[i].setHorizontalAlignment(SwingConstants.CENTER);
+                labels[i].setVerticalAlignment(SwingConstants.CENTER);
             }
         }
         JTextField textField = new JTextField();
@@ -116,12 +118,10 @@ public class Graphics extends JFrame {
                 for (JLabel[] labels : visible) {
                     for (JLabel label : labels) {
                         label.setBackground(Color.gray);
-                        label.setSize(30, 30);
                         label.setText("");
                     }
                 }
                 colMine = Integer.parseInt(textField.getText());
-                textField.setText("");
                 Minesweeper.createWorld(colMine);
             }
         };
