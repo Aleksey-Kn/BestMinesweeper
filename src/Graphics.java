@@ -5,24 +5,17 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class Graphics extends JFrame {
-    private final JLabel[][] visible = new JLabel[9][9];
+    private JLabel[][] visible;
     private boolean isPlaying = false;
     private int colMine;
     private boolean firstOpen = true;
+    private int sizeOfWorld;
 
     public Graphics() {
         super("Minesweeper");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setBounds(200, 100, 500, 500);
 
-        for (JLabel[] labels : visible) {
-            for (int i = 0; i < labels.length; i++) {
-                labels[i] = new JLabel();
-                labels[i].setOpaque(true);
-                labels[i].setHorizontalAlignment(SwingConstants.CENTER);
-                labels[i].setVerticalAlignment(SwingConstants.CENTER);
-            }
-        }
         JTextField textField = new JTextField();
         JButton start = new JButton("Создать");
         JPanel firstPanel = new JPanel() {
@@ -43,21 +36,15 @@ public class Graphics extends JFrame {
 
             {
                 setBounds(0, 50, 500, 500);
-                setLayout(new GridLayout(9, 9, 3, 3));
-                for (JLabel[] labels : visible) {
-                    for (JLabel obj : labels) {
-                        add(obj);
-                    }
-                }
                 setBackground(Color.black);
                 setVisible(false);
                 addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
                         if (isPlaying) {
-                            x = e.getX() / (getWidth() / 9);
-                            y = e.getY() / (getHeight() / 9);
-                            if(x >= 0 && x < 9 && y >= 0 && y < 9) {
+                            x = e.getX() / (getWidth() / sizeOfWorld);
+                            y = e.getY() / (getHeight() / sizeOfWorld);
+                            if(x >= 0 && x < sizeOfWorld && y >= 0 && y < sizeOfWorld) {
                                 if (e.getButton() == MouseEvent.BUTTON1 && !visible[y][x].getBackground().equals(Color.orange)) {
                                     if (firstOpen) {
                                         temp = Minesweeper.firstOpen(x, y, visible);
@@ -66,8 +53,8 @@ public class Graphics extends JFrame {
                                         temp = Minesweeper.open(x, y, visible);
                                     }
                                     if (!temp) { // поражение
-                                        for (int i = 0; i < 9; i++) {
-                                            for (int j = 0; j < 9; j++) {
+                                        for (int i = 0; i < sizeOfWorld; i++) {
+                                            for (int j = 0; j < sizeOfWorld; j++) {
                                                 now = Minesweeper.getWorld()[i][j];
                                                 if (Character.isDigit(now)) {
                                                     visible[i][j].setText(Character.toString(now));
@@ -115,14 +102,27 @@ public class Graphics extends JFrame {
                 firstOpen = true;
                 firstPanel.setVisible(false);
                 secondPanel.setVisible(true);
-                for (JLabel[] labels : visible) {
-                    for (JLabel label : labels) {
-                        label.setBackground(Color.gray);
-                        label.setText("");
+                colMine = Integer.parseInt(textField.getText());
+                sizeOfWorld = Minesweeper.createWorld(colMine);
+                if(visible != null){
+                    for(JLabel[] labels: visible){
+                        for(JLabel obj: labels){
+                            secondPanel.remove(obj);
+                        }
                     }
                 }
-                colMine = Integer.parseInt(textField.getText());
-                Minesweeper.createWorld(colMine);
+                secondPanel.setLayout(new GridLayout(sizeOfWorld, sizeOfWorld, 3, 3));
+                visible = new JLabel[sizeOfWorld][sizeOfWorld];
+                for (JLabel[] labels : visible) {
+                    for (int i = 0; i < labels.length; i++) {
+                        labels[i] = new JLabel();
+                        labels[i].setOpaque(true);
+                        labels[i].setHorizontalAlignment(SwingConstants.CENTER);
+                        labels[i].setVerticalAlignment(SwingConstants.CENTER);
+                        labels[i].setBackground(Color.gray);
+                        secondPanel.add(labels[i]);
+                    }
+                }
             }
         };
 

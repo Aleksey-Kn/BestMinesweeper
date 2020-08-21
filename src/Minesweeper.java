@@ -6,7 +6,7 @@ import java.util.Random;
 
 public class Minesweeper {
     private static Random random;
-    private static final char[][] world = new char[9][9];
+    private static char[][] world;
     private static int opened;
 
     public static void main(String[] args) {
@@ -24,8 +24,8 @@ public class Minesweeper {
             world[ty][tx] = 'X';
             world[y][x] = '.';
         }
-        for (int i = 0, temp; i < 9; i++) {
-            for (int j = 0; j < 9; j++) {
+        for (int i = 0, temp; i < world.length; i++) {
+            for (int j = 0; j < world.length; j++) {
                 if (world[i][j] != 'X') {
                     temp = countMine(j, i);
                     world[i][j] = (char) (temp == 0 ? '/' : '0' + temp);
@@ -36,7 +36,7 @@ public class Minesweeper {
     }
 
     private static int countMine(int x, int y) {
-        int max = 8;
+        int max = world.length - 1;
         int counter = (x > 0 && y > 0 && world[y - 1][x - 1] == 'X' ? 1 : 0);
         counter += (y > 0 && world[y - 1][x] == 'X' ? 1 : 0);
         counter += (y > 0 && x < max && world[y - 1][x + 1] == 'X' ? 1 : 0);
@@ -57,7 +57,7 @@ public class Minesweeper {
         while (!stack.isEmpty()) {
             x = stack.peek()[0];
             y = stack.pop()[1];
-            if (x >= 0 && x < 9 && y >= 0 && y < 9
+            if (x >= 0 && x < world.length && y >= 0 && y < world.length
                     && (labels[y][x].getBackground().equals(Color.gray)
                     || labels[y][x].getBackground().equals(Color.orange))) {
                 if (world[y][x] == '/') {
@@ -80,9 +80,11 @@ public class Minesweeper {
         return true;
     }
 
-    public static void createWorld(int colMine) {
-        int counter = 0, x, y;
+    public static int createWorld(int colMine) {
+        int counter = 0, x, y, size;
         opened = 0;
+        size = colMine < 20? 9: (colMine < 45? 15: 30);
+        world = new char[size][size];
         for (char[] chars : world) {
             Arrays.fill(chars, '.');
         }
@@ -94,11 +96,12 @@ public class Minesweeper {
                 world[y][x] = 'X';
             }
         }
+        return size;
     }
 
     public static boolean isWin(int colMine, JLabel[][] mask) {
         int counter = 0;
-        if (opened + colMine == 81) {
+        if (opened + colMine == world.length * world.length) {
             return true;
         }
         for (int i = 0; i < world.length; i++) {
