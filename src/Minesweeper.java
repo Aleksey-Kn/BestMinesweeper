@@ -83,7 +83,7 @@ public class Minesweeper {
     public static int createWorld(int colMine) {
         int counter = 0, x, y, size;
         opened = 0;
-        size = colMine < 18? 9: (colMine < 45? 15: 30);
+        size = colMine < 18? 9: (colMine < 45? 15: 21);
         world = new char[size][size];
         for (char[] chars : world) {
             Arrays.fill(chars, '.');
