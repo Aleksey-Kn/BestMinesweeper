@@ -105,11 +105,7 @@ public class Graphics extends JFrame {
                 colMine = Integer.parseInt(textField.getText());
                 sizeOfWorld = Minesweeper.createWorld(colMine);
                 if(visible != null){
-                    for(JLabel[] labels: visible){
-                        for(JLabel obj: labels){
-                            secondPanel.remove(obj);
-                        }
-                    }
+                    secondPanel.removeAll();
                 }
                 secondPanel.setLayout(new GridLayout(sizeOfWorld, sizeOfWorld, 3, 3));
                 visible = new JLabel[sizeOfWorld][sizeOfWorld];
