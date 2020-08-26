@@ -42,8 +42,8 @@ public class Graphics extends JFrame {
                     @Override
                     public void mouseClicked(MouseEvent e) {
                         if (isPlaying) {
-                            x = e.getX() / (getWidth() / sizeOfWorld);
-                            y = e.getY() / (getHeight() / sizeOfWorld);
+                            x = e.getX() / (visible[0][0].getWidth() + 3);
+                            y = e.getY() / (visible[0][0].getHeight() + 3);
                             if(x >= 0 && x < sizeOfWorld && y >= 0 && y < sizeOfWorld) {
                                 if (e.getButton() == MouseEvent.BUTTON1 && !visible[y][x].getBackground().equals(Color.orange)) {
                                     if (firstOpen) {
